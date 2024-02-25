@@ -72,7 +72,7 @@ public class CommandManager {
    * @param reader Reader instance
    */
   public void setReader(Reader reader) {
-    addCommand(new Exit(reader));
+    addCommand(new Exit(collectionManager, reader));
     addCommand(new UpdateById(collectionManager, reader));
     addCommand(new RemoveLower(collectionManager, reader));
     addCommand(new AddIfMax(collectionManager, reader));

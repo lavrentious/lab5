@@ -24,12 +24,14 @@ public class CollectionManager {
   private LocalDateTime createdAt;
   private LocalDateTime updatedAt;
   private long lastId;
+  private boolean hasUnsavedChanges;
 
   public CollectionManager() {
+    hasUnsavedChanges = false;
     collection = new TreeSet<>();
     type = "TreeSet";
     createdAt = LocalDateTime.now();
-    setUpdatedAt();
+    updatedAt = LocalDateTime.from(createdAt);
     lastId = 1;
   }
 
@@ -73,12 +75,14 @@ public class CollectionManager {
   }
 
   private void setUpdatedAt() {
+    hasUnsavedChanges = true;
     updatedAt = LocalDateTime.now();
   }
 
   public void saveToFile(String filePath) throws FileNotFoundException, AccessDeniedException, SerializationException {
     XMLDumper xmlDumper = new XMLDumper(filePath, this);
     xmlDumper.dump();
+    hasUnsavedChanges = false;
   }
 
   public void loadFromFile(String filePath) throws ParserConfigurationException, SAXException, IOException, Exception {
@@ -135,5 +139,9 @@ public class CollectionManager {
       }
     }
     return false;
+  }
+
+  public boolean getHasUnsavedChanges() {
+    return hasUnsavedChanges;
   }
 }
