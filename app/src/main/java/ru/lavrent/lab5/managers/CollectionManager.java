@@ -15,6 +15,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.TreeSet;
 
+/**
+ * manages the collection of entities
+ */
 public class CollectionManager {
   private TreeSet<LabWork> collection;
   private String type;
@@ -30,6 +33,14 @@ public class CollectionManager {
     lastId = 1;
   }
 
+  /**
+   * edit information about collection
+   * 
+   * @param type      type of storage the collection usees
+   * @param createdAt date of creation
+   * @param updatedAt date of update
+   * @param lastId    last taken id + 1 (first free id)
+   */
   public void setMetaData(String type, LocalDateTime createdAt, LocalDateTime updatedAt, long lastId) {
     this.type = type;
     this.createdAt = createdAt;

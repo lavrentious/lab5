@@ -11,6 +11,9 @@ import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Scanner;
 
+/**
+ * class to read input
+ */
 public class Reader {
   static HashSet<String> visitedFiles = new HashSet<>();
   private Scanner scanner;
@@ -20,6 +23,14 @@ public class Reader {
   private boolean fileMode;
   private boolean working;
 
+  /**
+   * constructs a Reader object
+   * 
+   * @param commandManager command manager to execute commands
+   * @param fileName       path to file to execute. if null read from console
+   * @throws CircularScriptException when reading form file that invokes itself at
+   *                                 some point
+   */
   public Reader(CommandManager commandManager, String fileName) {
     this.commandManager = commandManager;
 
@@ -45,6 +56,9 @@ public class Reader {
     }
   }
 
+  /**
+   * reads input and executes commands until halted
+   */
   public void read() {
     if (fileMode) {
       System.out.println("reading from %s".formatted(filePath));
@@ -74,15 +88,29 @@ public class Reader {
     scanner.close();
   }
 
+  /**
+   * runs a form
+   * 
+   * @param form the form to run
+   * @param <T>  the type of the result
+   * @return result obtained from running the form
+   */
   public <T> T runForm(Form<T> form) throws ValidationException {
     return form.run(scanner);
   }
 
-  // execute_script ../script.txt
+  /**
+   * halts the current Reader
+   */
   public void halt() {
     working = false;
   }
 
+  /**
+   * get the current Scanner
+   *
+   * @return Scanner instance
+   */
   public Scanner getScanner() {
     return scanner;
   }

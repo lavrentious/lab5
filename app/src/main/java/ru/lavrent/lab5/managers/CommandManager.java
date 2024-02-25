@@ -24,6 +24,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * class responsible for organizing and invoking commands
+ */
 public class CommandManager {
   private HashMap<String, Command> commands;
   private ArrayList<String> history;
@@ -34,6 +37,11 @@ public class CommandManager {
     history = new ArrayList<>();
   }
 
+  /**
+   * initialize a new CommandManager
+   * 
+   * @param collectionManager the CollectionManager to use
+   */
   public CommandManager(CollectionManager collectionManager) {
     this.collectionManager = collectionManager;
 
@@ -58,6 +66,11 @@ public class CommandManager {
     addCommand(new History(this));
   }
 
+  /**
+   * register commands that require a Reader
+   * 
+   * @param reader Reader instance
+   */
   public void setReader(Reader reader) {
     addCommand(new Exit(reader));
     addCommand(new UpdateById(collectionManager, reader));
@@ -99,7 +112,16 @@ public class CommandManager {
     return history.subList(Math.max(history.size() - n, 0), history.size());
   }
 
+  /**
+   * utilites for processing command arguments
+   */
   public static class ArgsUtils {
+    /**
+     * return the command assuming it's the first word
+     * 
+     * @param input user input
+     * @return the invoked commad
+     */
     public static String getCommandFromInput(String input) {
       String[] parts = input.split("\\s+");
       return parts[0];
@@ -112,6 +134,14 @@ public class CommandManager {
       return cmdArgs;
     }
 
+    /**
+     * retrieve i-th argument
+     * 
+     * @param args command's args list
+     * @param i    the number (from 0)
+     * @return the i-th arg
+     * @throws IllegalArgumentException i-th arument is not found
+     */
     public static String getIth(String[] args, int i) {
       if (i < 0 || i >= args.length) {
         throw new IllegalArgumentException("invalid index (must be 0 ≤ i ≤ %s)".formatted(args.length - 1));

@@ -1,5 +1,8 @@
 package ru.lavrent.lab5.exceptions;
 
+/**
+ * represents exception that occurs when object cannot be deserialized
+ */
 public class DeserializationException extends Exception {
   public DeserializationException(String message, Throwable cause) {
     super(message, cause);

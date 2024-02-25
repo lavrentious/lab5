@@ -22,7 +22,6 @@ public class EnvConfig implements IConfig {
     return instance;
   }
 
-  // Method to load configuration
   @Override
   public void onLoad() {
     dbPath = System.getenv("dbPath");
@@ -32,7 +31,6 @@ public class EnvConfig implements IConfig {
     }
   }
 
-  // Method to validate configuration
   @Override
   public void validate() throws InvalidConfigException {
     if (dbPath == null) {

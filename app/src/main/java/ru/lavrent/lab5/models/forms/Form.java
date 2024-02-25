@@ -7,9 +7,22 @@ import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public abstract class Form<T> {
+  /**
+   * run the form and return the created result
+   * 
+   * @param scanner
+   * @return entered entity
+   * @throws ValidationException
+   */
   public abstract T run(Scanner scanner) throws ValidationException;
 
   // TODO: retry while incorrect wrapper function or something
+  /**
+   * @param message     message before input
+   * @param scanner     Scanner instance to use
+   * @param validatorFn function to validate input
+   * @return entered int/null
+   */
   public static Integer getInt(String message, Scanner scanner, ValidatorFn<Integer> validatorFn) {
     do {
       System.out.print(message);
@@ -27,6 +40,12 @@ public abstract class Form<T> {
     } while (true);
   }
 
+  /**
+   * @param message     message before input
+   * @param scanner     Scanner instance to use
+   * @param validatorFn function to validate input
+   * @return entered long/null
+   */
   public static Long getLong(String message, Scanner scanner, ValidatorFn<Long> validatorFn) {
     do {
       System.out.print(message);
@@ -44,6 +63,12 @@ public abstract class Form<T> {
     } while (true);
   }
 
+  /**
+   * @param message     message before input
+   * @param scanner     Scanner instance to use
+   * @param validatorFn function to validate input
+   * @return entered string
+   */
   public static String getString(String message, Scanner scanner, ValidatorFn<String> validatorFn) {
     do {
       System.out.print(message);
@@ -58,6 +83,13 @@ public abstract class Form<T> {
     } while (true);
   }
 
+  /**
+   * 
+   * @param message      message before input
+   * @param scanner      Scanner instance to use
+   * @param defaultValue default value
+   * @return entered boolean/default boolean
+   */
   public static boolean getYN(String message, Scanner scanner, Boolean defaultValue) {
     do {
       String choice = getString(message, scanner, null);
@@ -78,6 +110,15 @@ public abstract class Form<T> {
     } while (true);
   }
 
+  /**
+   * input a enum value by its constant name
+   * 
+   * @param <T>       enum
+   * @param message   message before input
+   * @param enumClass enum class
+   * @param scanner   Scanner instance to use
+   * @return
+   */
   public static <T extends Enum<T>> T getEnumValue(String message, Class<T> enumClass, Scanner scanner) {
     do {
       System.out.println(message);
