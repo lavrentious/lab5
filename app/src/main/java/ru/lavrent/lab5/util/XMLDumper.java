@@ -37,6 +37,7 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.Scanner;
+import java.util.function.Function;
 
 public class XMLDumper implements IDumper {
   private File file;
@@ -68,6 +69,14 @@ public class XMLDumper implements IDumper {
     return rootElement.getElementsByTagName(tag).item(0).getTextContent();
   }
 
+  private static String toStringNullable(Object x) {
+    return x == null ? "" : x.toString();
+  }
+
+  private static <T> T parse(String s, Function<String, T> fn) {
+    return s.isEmpty() ? null : fn.apply(s);
+  }
+
   private static String toXML(Iterable<LabWork> labWorks,
       String type,
       LocalDateTime createdAt,
@@ -89,23 +98,25 @@ public class XMLDumper implements IDumper {
         Element labWorkElement = doc.createElement("labwork");
         collection.appendChild(labWorkElement);
 
-        addTextNode(doc, labWorkElement, "id", Long.toString(labWork.getId()));
+        addTextNode(doc, labWorkElement, "id", toStringNullable(labWork.getId()));
         addTextNode(doc, labWorkElement, "name", labWork.getName());
-        addTextNode(doc, labWorkElement, "creationDate", labWork.getCreationDate().toString());
+        addTextNode(doc, labWorkElement, "creationDate", toStringNullable(labWork.getCreationDate()));
 
         Element coordinatesElement = doc.createElement("coordinates");
-        addTextNode(doc, coordinatesElement, "x", Long.toString(labWork.getCoordinates().getX()));
-        addTextNode(doc, coordinatesElement, "y", Integer.toString(labWork.getCoordinates().getY()));
+        addTextNode(doc, coordinatesElement, "x", toStringNullable(labWork.getCoordinates().getX()));
+        addTextNode(doc, coordinatesElement, "y", toStringNullable(labWork.getCoordinates().getY()));
         labWorkElement.appendChild(coordinatesElement);
 
-        addTextNode(doc, labWorkElement, "minimalPoint", Long.toString(labWork.getMinimalPoint()));
-        addTextNode(doc, labWorkElement, "difficulty", Integer.toString(labWork.getDifficulty().ordinal()));
+        addTextNode(doc, labWorkElement, "minimalPoint", toStringNullable(labWork.getMinimalPoint()));
+        addTextNode(doc, labWorkElement, "difficulty", toStringNullable(labWork.getDifficulty().ordinal()));
 
         Element disciplineElement = doc.createElement("discipline");
         addTextNode(doc, disciplineElement, "name", labWork.getDiscipline().getName());
-        addTextNode(doc, disciplineElement, "lectureHours", Long.toString(labWork.getDiscipline().getLectureHours()));
-        addTextNode(doc, disciplineElement, "practiceHours", labWork.getDiscipline().getPracticeHours().toString());
-        addTextNode(doc, disciplineElement, "labsCount", labWork.getDiscipline().getLabsCount().toString());
+        addTextNode(doc, disciplineElement, "lectureHours",
+            toStringNullable(labWork.getDiscipline().getLectureHours()));
+        addTextNode(doc, disciplineElement, "practiceHours",
+            toStringNullable(labWork.getDiscipline().getPracticeHours()));
+        addTextNode(doc, disciplineElement, "labsCount", toStringNullable(labWork.getDiscipline().getLabsCount()));
         labWorkElement.appendChild(disciplineElement);
       }
       rootElement.appendChild(collection);
@@ -151,8 +162,8 @@ public class XMLDumper implements IDumper {
         throw new DeserializationException("root element must be collectionDump");
       }
       String type = getTextFromNode(rootElement, "type");
-      LocalDateTime createdAt = LocalDateTime.parse(getTextFromNode(rootElement, "createdAt"));
-      LocalDateTime updatedAt = LocalDateTime.parse(getTextFromNode(rootElement, "updatedAt"));
+      LocalDateTime createdAt = parse(getTextFromNode(rootElement, "createdAt"), LocalDateTime::parse);
+      LocalDateTime updatedAt = parse(getTextFromNode(rootElement, "updatedAt"), LocalDateTime::parse);
 
       NodeList labworkNodes = rootElement.getElementsByTagName("labwork");
       for (int i = 0; i < labworkNodes.getLength(); i++) {
@@ -160,23 +171,24 @@ public class XMLDumper implements IDumper {
         if (labworkNode.getNodeType() != Node.ELEMENT_NODE)
           continue;
         Element labworkElement = (Element) labworkNode;
-        long id = Long.parseLong(getTextFromNode(labworkElement, "id"));
+        long id = parse(getTextFromNode(labworkElement, "id"), Long::parseLong);
         String name = getTextFromNode(labworkElement, "name");
 
         Element coordinatesElement = (Element) labworkElement.getElementsByTagName("coordinates").item(0);
-        long x = Long.parseLong(getTextFromNode(coordinatesElement, "x"));
-        int y = Integer.parseInt(getTextFromNode(coordinatesElement, "y"));
+        long x = parse(getTextFromNode(coordinatesElement, "x"), Long::parseLong);
+        int y = parse(getTextFromNode(coordinatesElement, "y"), Integer::parseInt);
         Coordinates coordinates = new Coordinates(x, y);
 
         ZonedDateTime creationDate = ZonedDateTime.parse(getTextFromNode(labworkElement, "creationDate"));
-        long minimalPoint = Long.parseLong(getTextFromNode(labworkElement, "minimalPoint"));
-        Difficulty difficulty = Difficulty.values()[Integer.parseInt(getTextFromNode(labworkElement, "difficulty"))];
+        long minimalPoint = parse(getTextFromNode(labworkElement, "minimalPoint"), Long::parseLong);
+        int difficultyOrd = parse(getTextFromNode(labworkElement, "difficulty"), Integer::parseInt);
+        Difficulty difficulty = Difficulty.values()[difficultyOrd];
 
         Element disciplineElement = (Element) labworkElement.getElementsByTagName("discipline").item(0);
         String disciplineName = getTextFromNode(disciplineElement, "name");
-        long lectureHours = Long.parseLong(getTextFromNode(disciplineElement, "lectureHours"));
-        Long practiceHours = parseLongOrNull(getTextFromNode(disciplineElement, "practiceHours"));
-        Integer labsCount = parseIntOrNull(getTextFromNode(disciplineElement, "labsCount"));
+        long lectureHours = parse(getTextFromNode(disciplineElement, "lectureHours"), Long::parseLong);
+        Long practiceHours = parse(getTextFromNode(disciplineElement, "practiceHours"), Long::parseLong);
+        Integer labsCount = parse(getTextFromNode(disciplineElement, "labsCount"), Integer::parseInt);
         Discipline discipline = new Discipline(disciplineName, lectureHours, practiceHours, labsCount);
 
         if (collectionManager.getById(id) != null) {
@@ -191,19 +203,5 @@ public class XMLDumper implements IDumper {
     } finally {
       scanner.close();
     }
-  }
-
-  private static Integer parseIntOrNull(String str) {
-    if (str == null || str.isEmpty()) {
-      return null;
-    }
-    return Integer.parseInt(str);
-  }
-
-  private static Long parseLongOrNull(String str) {
-    if (str == null || str.isEmpty()) {
-      return null;
-    }
-    return Long.parseLong(str);
   }
 }
