@@ -1,9 +1,11 @@
 package ru.lavrent.lab5.models.forms;
 
+import ru.lavrent.lab5.exceptions.ScriptException;
 import ru.lavrent.lab5.exceptions.ValidationException;
 import ru.lavrent.lab5.interfaces.ValidatorFn;
 
 import java.util.InputMismatchException;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 public abstract class Form<T> {
@@ -36,6 +38,8 @@ public abstract class Form<T> {
         System.out.println("validation failed: %s. retry.".formatted(e.getMessage()));
       } catch (NumberFormatException e) {
         System.out.println("incorrect number format %s. retry.".formatted(e.getMessage()));
+      } catch (NoSuchElementException e) {
+        System.out.println("no line found: %s".formatted(e.getMessage()));
       }
     } while (true);
   }
@@ -59,6 +63,8 @@ public abstract class Form<T> {
         System.out.println("validation failed: %s. retry.".formatted(e.getMessage()));
       } catch (NumberFormatException e) {
         System.out.println("incorrect number format %s. retry.".formatted(e.getMessage()));
+      } catch (NoSuchElementException e) {
+        throw new ScriptException("no line found: %s".formatted(e.getMessage()));
       }
     } while (true);
   }
@@ -79,6 +85,8 @@ public abstract class Form<T> {
         return ans;
       } catch (ValidationException e) {
         System.out.println("validation failed: %s. retry.".formatted(e.getMessage()));
+      } catch (NoSuchElementException e) {
+        throw new ScriptException("no line found: %s".formatted(e.getMessage()));
       }
     } while (true);
   }
@@ -106,6 +114,8 @@ public abstract class Form<T> {
         return choice.equalsIgnoreCase("y");
       } catch (InputMismatchException e) {
         System.err.println(e.getMessage());
+      } catch (NoSuchElementException e) {
+        throw new ScriptException("no line found: %s".formatted(e.getMessage()));
       }
     } while (true);
   }

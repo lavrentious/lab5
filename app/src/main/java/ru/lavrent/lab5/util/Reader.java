@@ -1,6 +1,7 @@
 package ru.lavrent.lab5.util;
 
 import ru.lavrent.lab5.exceptions.CircularScriptException;
+import ru.lavrent.lab5.exceptions.ScriptException;
 import ru.lavrent.lab5.exceptions.ValidationException;
 import ru.lavrent.lab5.managers.CommandManager;
 import ru.lavrent.lab5.models.forms.Form;
@@ -76,6 +77,8 @@ public class Reader {
 
       try {
         commandManager.execute(input);
+      } catch (ScriptException e) {
+        System.err.println("script exception: %s".formatted(e.getMessage()));
       } catch (Exception e) {
         System.err.println("unhandled exception: " + e.getMessage());
         e.printStackTrace(System.err);
