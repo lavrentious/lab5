@@ -181,6 +181,9 @@ public class XMLDumper implements IDumper {
         Integer labsCount = parseIntOrNull(getTextFromNode(disciplineElement, "labsCount"));
         Discipline discipline = new Discipline(disciplineName, lectureHours, practiceHours, labsCount);
 
+        if (collectionManager.getById(id) != null) {
+          throw new ValidationException("labwork id %d already exists".formatted(id));
+        }
         collectionManager.add(new LabWork(id, name, coordinates, creationDate, minimalPoint, difficulty, discipline));
       }
       collectionManager.setMetaData(type, createdAt, updatedAt, lastId);
