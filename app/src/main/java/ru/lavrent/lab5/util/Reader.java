@@ -61,7 +61,7 @@ public class Reader {
    * reads input and executes commands until halted
    */
   public void read() {
-    if (fileMode) {
+    if (fileMode && scanner != null) {
       System.out.println("reading from %s".formatted(filePath));
     }
     while (working) {
@@ -87,7 +87,9 @@ public class Reader {
     if (filePath != null) {
       visitedFiles.remove(filePath);
     }
-    scanner.close();
+    if (scanner != null) {
+      scanner.close();
+    }
   }
 
   /**
