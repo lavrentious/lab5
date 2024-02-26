@@ -46,19 +46,16 @@ public class Discipline implements Validatable {
     }
   }
 
-  public static void validatePracticeHours(Long practiceHours) throws ValidationException {
-    if (practiceHours == null) {
-      throw new ValidationException("practiceHours must not be null");
+  public static void validateLectureHours(Long lectureHours) throws ValidationException {
+    if (lectureHours == null) {
+      throw new ValidationException("lectureHours must not be null");
     }
   }
 
-  public static void validateLectureHours(Long lectureHours) throws ValidationException {
+  public static void validatePracticeHours(Long practiceHours) throws ValidationException {
   }
 
   public static void validateLabsCount(Integer labsCount) throws ValidationException {
-    if (labsCount == null) {
-      throw new ValidationException("labsCount must not be null");
-    }
   }
 
   public void validate() throws ValidationException {
