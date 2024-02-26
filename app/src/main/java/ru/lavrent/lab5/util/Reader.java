@@ -84,7 +84,6 @@ public class Reader {
         e.printStackTrace(System.err);
       }
     }
-    System.out.println("closing scanner %d".formatted(scanner.hashCode()));
     if (filePath != null) {
       visitedFiles.remove(filePath);
     }
