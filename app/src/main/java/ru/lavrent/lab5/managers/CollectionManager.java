@@ -85,6 +85,7 @@ public class CollectionManager {
     XMLDumper xmlDumper = new XMLDumper(filePath, this);
     clear();
     xmlDumper.load();
+    hasUnsavedChanges = false;
   }
 
   public void add(LabWork labWork) {
