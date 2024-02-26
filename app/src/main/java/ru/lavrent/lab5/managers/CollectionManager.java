@@ -58,10 +58,6 @@ public class CollectionManager {
     return type;
   }
 
-  public long getLastId() {
-    return lastId;
-  }
-
   public LocalDateTime getCreatedAt() {
     return createdAt;
   }

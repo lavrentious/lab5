@@ -71,8 +71,7 @@ public class XMLDumper implements IDumper {
   private static String toXML(Iterable<LabWork> labWorks,
       String type,
       LocalDateTime createdAt,
-      LocalDateTime updatedAt,
-      long lastId) throws SerializationException {
+      LocalDateTime updatedAt) throws SerializationException {
     try {
       DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
       DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
@@ -84,7 +83,6 @@ public class XMLDumper implements IDumper {
       addTextNode(doc, rootElement, "type", type);
       addTextNode(doc, rootElement, "createdAt", createdAt.toString());
       addTextNode(doc, rootElement, "updatedAt", createdAt.toString());
-      addTextNode(doc, rootElement, "lastId", Long.toString(lastId));
 
       Element collection = doc.createElement("collection");
       for (LabWork labWork : labWorks) {
@@ -130,13 +128,14 @@ public class XMLDumper implements IDumper {
       throws FileNotFoundException, SerializationException {
     printWriter = new PrintWriter(file);
     String xml = toXML(collectionManager.getList(), collectionManager.getType(), collectionManager.getCreatedAt(),
-        collectionManager.getUpdatedAt(), collectionManager.getLastId());
+        collectionManager.getUpdatedAt());
     printWriter.println(xml);
     printWriter.close();
   }
 
   public void load() throws FileNotFoundException, DeserializationException {
     Scanner scanner = new Scanner(file);
+    long lastId = 0;
     try {
       StringBuilder content = new StringBuilder();
       while (scanner.hasNextLine()) {
@@ -154,7 +153,6 @@ public class XMLDumper implements IDumper {
       String type = getTextFromNode(rootElement, "type");
       LocalDateTime createdAt = LocalDateTime.parse(getTextFromNode(rootElement, "createdAt"));
       LocalDateTime updatedAt = LocalDateTime.parse(getTextFromNode(rootElement, "updatedAt"));
-      long lastId = Long.parseLong(getTextFromNode(rootElement, "lastId"));
 
       NodeList labworkNodes = rootElement.getElementsByTagName("labwork");
       for (int i = 0; i < labworkNodes.getLength(); i++) {
@@ -184,6 +182,7 @@ public class XMLDumper implements IDumper {
         if (collectionManager.getById(id) != null) {
           throw new ValidationException("labwork id %d already exists".formatted(id));
         }
+        lastId = Math.max(lastId, id + 1);
         collectionManager.add(new LabWork(id, name, coordinates, creationDate, minimalPoint, difficulty, discipline));
       }
       collectionManager.setMetaData(type, createdAt, updatedAt, lastId);
