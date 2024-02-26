@@ -2,7 +2,7 @@ package ru.lavrent.lab5.commands;
 
 import ru.lavrent.lab5.managers.CollectionManager;
 import ru.lavrent.lab5.managers.CommandManager;
-import ru.lavrent.lab5.util.Reader;
+import ru.lavrent.lab5.managers.RuntimeManager;
 
 public class ExecuteScript extends Command {
   private CollectionManager collectionManager;
@@ -15,11 +15,9 @@ public class ExecuteScript extends Command {
   public void execute(String[] args) {
     try {
       final String filePath = CommandManager.ArgsUtils.getIth(args, 0);
-      CommandManager commandManager = new CommandManager(collectionManager);
-      Reader reader = new Reader(commandManager, filePath);
-      commandManager.setReader(reader);
 
-      reader.read();
+      RuntimeManager runtimeManager = new RuntimeManager(collectionManager, filePath);
+      runtimeManager.getReader().read();
     } catch (IllegalArgumentException e) {
       System.err.println("argument error: " + e.getMessage());
     }

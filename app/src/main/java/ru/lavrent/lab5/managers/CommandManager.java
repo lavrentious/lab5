@@ -1,24 +1,6 @@
 package ru.lavrent.lab5.managers;
 
-import ru.lavrent.lab5.commands.Add;
-import ru.lavrent.lab5.commands.AddIfMax;
-import ru.lavrent.lab5.commands.Clear;
 import ru.lavrent.lab5.commands.Command;
-import ru.lavrent.lab5.commands.CountLessThanDifficulty;
-import ru.lavrent.lab5.commands.ExecuteScript;
-import ru.lavrent.lab5.commands.Exit;
-import ru.lavrent.lab5.commands.Help;
-import ru.lavrent.lab5.commands.History;
-import ru.lavrent.lab5.commands.Info;
-import ru.lavrent.lab5.commands.Load;
-import ru.lavrent.lab5.commands.MinByMinimalPoint;
-import ru.lavrent.lab5.commands.PrintAscending;
-import ru.lavrent.lab5.commands.RemoveById;
-import ru.lavrent.lab5.commands.RemoveLower;
-import ru.lavrent.lab5.commands.Save;
-import ru.lavrent.lab5.commands.Show;
-import ru.lavrent.lab5.commands.UpdateById;
-import ru.lavrent.lab5.util.Reader;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,7 +12,6 @@ import java.util.List;
 public class CommandManager {
   private HashMap<String, Command> commands;
   private ArrayList<String> history;
-  private CollectionManager collectionManager;
 
   public CommandManager() {
     commands = new HashMap<>();
@@ -43,40 +24,8 @@ public class CommandManager {
    * @param collectionManager the CollectionManager to use
    */
   public CommandManager(CollectionManager collectionManager) {
-    this.collectionManager = collectionManager;
-
     commands = new HashMap<>();
     history = new ArrayList<>();
-    Command[] initCommands = new Command[] {
-        new Info(collectionManager),
-        new CountLessThanDifficulty(collectionManager),
-        new Save(collectionManager),
-        new Load(collectionManager),
-        new Show(collectionManager),
-        new Clear(collectionManager),
-        new RemoveById(collectionManager),
-        new MinByMinimalPoint(collectionManager),
-        new PrintAscending(collectionManager),
-        new ExecuteScript(collectionManager)
-    };
-    for (Command command : initCommands) {
-      addCommand(command);
-    }
-    addCommand(new Help(this));
-    addCommand(new History(this));
-  }
-
-  /**
-   * register commands that require a Reader
-   * 
-   * @param reader Reader instance
-   */
-  public void setReader(Reader reader) {
-    addCommand(new Exit(collectionManager, reader));
-    addCommand(new UpdateById(collectionManager, reader));
-    addCommand(new RemoveLower(collectionManager, reader));
-    addCommand(new AddIfMax(collectionManager, reader));
-    addCommand(new Add(collectionManager, reader));
   }
 
   public void addCommand(Command command) {
